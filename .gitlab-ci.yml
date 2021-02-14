@@ -1,0 +1,28 @@
+stages:
+  - prepare
+  - package
+
+app:prepare:
+  stage: prepare
+  image: alpine/git:v2.26.2
+  tags:
+    - kubernetes
+    - cluster
+  script:
+    - echo "VERSION=$(git describe | sed s!v!!g)" > variables.env
+  artifacts:
+    reports:
+      dotenv:
+        - variables.env
+
+app:package:
+  stage: build
+  image: quay.io/buildah/stable:v1.16.0
+  needs:
+    - job: app:prepare
+      artifacts: true
+  before_script:
+    - buildah login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - buildah bud -t "$CI_REGISTRY_IMAGE:$VERSION"
+    - buildah push "$CI_REGISTRY_IMAGE:$VERSION" "docker://$CI_REGISTRY_IMAGE:$VERSION"
