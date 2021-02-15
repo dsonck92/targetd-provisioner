@@ -16,7 +16,7 @@ app:prepare:
         - variables.env
 
 app:package:
-  stage: build
+  stage: package
   image: quay.io/buildah/stable:v1.16.0
   needs:
     - job: app:prepare
