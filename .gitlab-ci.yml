@@ -18,6 +18,9 @@ app:prepare:
 app:package:
   stage: package
   image: quay.io/buildah/stable:v1.16.0
+  tags:
+    - kubernetes
+    - cluster
   needs:
     - job: app:prepare
       artifacts: true
