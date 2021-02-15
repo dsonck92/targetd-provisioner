@@ -2,6 +2,7 @@ package nfs
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/powerman/rpc-codec/jsonrpc2"
@@ -9,7 +10,6 @@ import (
 	"go.uber.org/zap"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/util/json"
 	"sigs.k8s.io/sig-storage-lib-external-provisioner/v6/controller"
 	"sigs.k8s.io/sig-storage-lib-external-provisioner/v6/util"
 	"strconv"

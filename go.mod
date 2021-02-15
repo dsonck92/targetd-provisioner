@@ -5,7 +5,6 @@ go 1.14
 require (
 	github.com/magiconair/properties v1.8.1
 	github.com/powerman/rpc-codec v1.2.2
-	github.com/sirupsen/logrus v1.4.2
 	github.com/spf13/cobra v1.0.0
 	github.com/spf13/viper v1.7.0
 	go.uber.org/zap v1.15.0
