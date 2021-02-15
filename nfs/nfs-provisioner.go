@@ -5,9 +5,11 @@ import (
 	"errors"
 	"fmt"
 	"github.com/powerman/rpc-codec/jsonrpc2"
+	"go.sonck.nl/targetd-provisioner/targetd"
 	"go.uber.org/zap"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/util/json"
 	"sigs.k8s.io/sig-storage-lib-external-provisioner/v6/controller"
 	"sigs.k8s.io/sig-storage-lib-external-provisioner/v6/util"
 	"strconv"
@@ -133,15 +135,32 @@ func (p *nfsProvisioner) Delete(context context.Context, volume *v1.PersistentVo
 		log.Debug("removing nfs export")
 		err := p.exportDestroy(host, volume.Spec.NFS.Path)
 		if err != nil {
-			log.Warn("failed to destroy nfs export", zap.Error(err))
-			return err
+			var errorInfo targetd.ErrorInfo
+			err2 := json.Unmarshal([]byte(err.Error()), &errorInfo)
+			if err2 != nil {
+				return err
+			}
+
+			if errorInfo.Code != targetd.NotFoundNfsExport {
+				log.Warn("failed to destroy nfs export", zap.Error(errorInfo))
+				return errorInfo
+			} else {
+				log.Warn("nfs export was already removed")
+			}
 		}
 		log.Debug("nfs export removed")
 	}
 	log.Debug("removing filesystem volume")
 	err := p.volDestroy(volume.Annotations["uuid"])
 	if err != nil {
-		log.Warn("failed to destroy filesystem volume", zap.Error(err))
+		var errorInfo targetd.ErrorInfo
+		err2 := json.Unmarshal([]byte(err.Error()), &errorInfo)
+		if err2 != nil {
+			log.Warn("failed to destroy filesystem volume", zap.Error(err))
+		}
+		if errorInfo.Code != targetd.NotFoundVolume {
+			log.Warn("failed to destroy filesystem volume", zap.Error(errorInfo))
+		}
 	}
 	log.Debug("logical volume removed")
 	log.Debug("volume deletion request completed")
