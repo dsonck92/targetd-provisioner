@@ -29,3 +29,4 @@ app:package:
   script:
     - buildah bud -t "$CI_REGISTRY_IMAGE:$VERSION"
     - buildah push "$CI_REGISTRY_IMAGE:$VERSION" "docker://$CI_REGISTRY_IMAGE:$VERSION"
+    - buildah push "$CI_REGISTRY_IMAGE:$VERSION" "docker://$CI_REGISTRY_IMAGE:latest"
