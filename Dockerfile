@@ -13,6 +13,7 @@ COPY main.go ./
 COPY cmd/ ./cmd/
 COPY iscsi/ ./iscsi/
 COPY nfs/ ./nfs/
+COPY targetd ./targetd/
 
 RUN go test -race -cover ./...
 RUN CGO_ENABLED=0 go build -a -tags netgo -installsuffix netgo -ldflags "-X bitbucket.touhou.fm/scm/mp/download-processor-go/cli/version.version=${VERSION}" -o /targetd-provisioner /build
